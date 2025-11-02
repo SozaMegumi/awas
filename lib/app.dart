@@ -37,7 +37,8 @@ final GoRouter _router = GoRouter(
   initialLocation: '/',
   redirect: (context, state) {
     final user = FirebaseAuth.instance.currentUser;
-    final loggingIn = state.subloc == '/login' || state.subloc == '/register';
+    // Use `location` (current full location) on newer go_router versions
+    final loggingIn = state.location == '/login' || state.location == '/register';
 
     if (user == null && !loggingIn) {
       return '/login';
@@ -49,22 +50,13 @@ final GoRouter _router = GoRouter(
     return null;
   },
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const AuthGate(),
-    ),
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginPage(),
-    ),
+    GoRoute(path: '/', builder: (context, state) => const AuthGate()),
+    GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
     GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterPage(),
     ),
-    GoRoute(
-      path: '/home',
-      builder: (context, state) => const HomePage(),
-    ),
+    GoRoute(path: '/home', builder: (context, state) => const HomePage()),
   ],
 );
 
@@ -101,17 +93,20 @@ class AuthGate extends StatelessWidget {
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Login Page')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Login Page')));
 }
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Register Page')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Register Page')));
 }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Home Dashboard')));
+  Widget build(BuildContext context) =>
+      const Scaffold(body: Center(child: Text('Home Dashboard')));
 }

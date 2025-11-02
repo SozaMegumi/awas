@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 import '../providers/weather_provider.dart';
@@ -6,7 +7,6 @@ import '../providers/weather_provider.dart';
 
 class WeatherAlertScreen extends StatefulWidget {
   const WeatherAlertScreen({Key? key}) : super(key: key);
-
 
   @override
   State<WeatherAlertScreen> createState() => _WeatherAlertScreenState();
@@ -17,7 +17,6 @@ class _WeatherAlertScreenState extends State<WeatherAlertScreen> {
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<WeatherProvider>(context);
-
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -42,6 +41,55 @@ class _WeatherAlertScreenState extends State<WeatherAlertScreen> {
     );
   }
 
-
   Widget _buildWeatherView(Map<String,dynamic> w) {
-    final current = w
+    final current = w['current'] as Map<String, dynamic>? ?? {};
+    final temp = current['temp']?.toString() ?? '-';
+    final weather = ((current['weather'] as List?)?.firstWhere((_) => true, orElse: () => null) ?? {}) as Map<String, dynamic>?;
+    final descr = weather?['description'] ?? '-';
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Current temperature: $temp °C', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Text('Conditions: $descr'),
+            const SizedBox(height: 8),
+            if ((w['alerts'] as List?)?.isNotEmpty ?? false) ...[
+              const Divider(),
+              const Text('Alerts:', style: TextStyle(fontWeight: FontWeight.bold)),
+              for (final a in (w['alerts'] as List)) Text(a.toString()),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<Position?> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return null;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return null;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return null;
+    }
+
+    return await Geolocator.getCurrentPosition();
+  }
+}

@@ -15,7 +15,8 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
+  // Pages are not const because some page widgets may not have const ctors.
+  final List<Widget> _pages = [
     LedgerScreen(),
     RemindersScreen(),
     CropsScreen(),

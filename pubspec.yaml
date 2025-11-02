@@ -61,6 +61,8 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_launcher_icons: ^0.13.1
   flutter_dotenv: ^5.0.2
+  # Routing
+  go_router: ^7.0.0
 
 
 dev_dependencies:
